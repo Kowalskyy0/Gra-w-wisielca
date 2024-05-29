@@ -13,11 +13,14 @@ Spis treści:
 
 2.Pobieranie
 - Projekt można pobrać poprzez sklonowanie tego repozytorium za pomocą Gita.
+- Aby uruchomić plik wymagane jest jego skompilowanie.
 
 3.Rozgrywka
-- Wyświetla się kategoria i losowe słowo z podkreśleniami dla niezgadywanych liter,
-- Jest określona liczba prób,
+- Możliwa jest edycja bazy słów poprzez modyfikowanie CATEGORIES,
+- Wybieramy poziom trudności: Łatwy, Średni, Trudny,
+- Wyświetla się kategoria i losowe słowo z podkreśleniami dla niezgadniętych liter,
+- Jest określona liczba prób uzależniona od słowa i poziomu trudności,
 - Aby zgadnąć słowo, wpisujemy litery po jednej,
-- Gra informuje o prawidłowych i nieprawidłowych zgadywaniach,
+- Gra informuje o prawidłowych i nieprawidłowych zgadnięciach,
 - Jeśli prawidłowo zgadniemy słowo, wygrywamy i rozpoczyna się nowa gra,
 - Jeśli skończą się nam próby, przegrywamy i wyświetlane jest poprawne słowo
