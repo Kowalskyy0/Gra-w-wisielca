@@ -1,4 +1,4 @@
-Gra w Wisielca
+2. Gra w Wisielca
 
 Projekt ukazuje klasyczną grę w wisielca, gra polega na zgadywaniu losowo wybranego słowa z różnych kategorii.
 
