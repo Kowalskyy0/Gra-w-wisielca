@@ -15,6 +15,7 @@ public class HangmanGame {
     private int remainingAttempts;
     private int wins;
     private int losses;
+    private int totalAttempts;
     private JFrame frame;
     private JTextField guessField;
     private JLabel wordLabel;
@@ -24,6 +25,8 @@ public class HangmanGame {
     private JLabel categoryLabel;
     private JLabel winsLabel;
     private JLabel lossesLabel;
+    private JComboBox<String> difficultyBox;
+    private JLabel totalAttemptsLabel;
 
     static {
         CATEGORIES.put("Miesiące", new String[]{"styczeń", "luty", "marzec", "listopad", "grudzień"});
@@ -36,27 +39,37 @@ public class HangmanGame {
         CATEGORIES.put("Pierwiastki chemiczne", new String[]{"wodór", "tlen", "lit", "węgiel", "fosfor"});
         CATEGORIES.put("Gatunki muzyczne", new String[]{"rock", "pop", "jazz", "klasyka", "elektroniczna"});
         CATEGORIES.put("Marki samochodów", new String[]{"Fiat", "Toyota", "Volkswagen", "Audi", "BMW"});
-      }
+    }
 
     public HangmanGame() {
         this.remainingAttempts = 0;
         this.wins = 0;
         this.losses = 0;
+        this.totalAttempts = 0;
         createAndShowGUI();
     }
 
     private void createAndShowGUI() {
         frame = new JFrame("Gra w wisielca");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(400, 400);
 
         Container pane = frame.getContentPane();
-        pane.setLayout(new GridLayout(8, 2));
+        pane.setLayout(new GridLayout(10, 2));
 
         titleLabel = new JLabel("GRA W WISIELCA", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 18));
         pane.add(titleLabel);
         pane.add(new JLabel(""));
+
+        String[] difficulties = {"Łatwy", "Średni", "Trudny"};
+        difficultyBox = new JComboBox<>(difficulties);
+        difficultyBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                startGame();
+            }
+        });
 
         guessField = new JTextField();
         wordLabel = new JLabel();
@@ -67,6 +80,7 @@ public class HangmanGame {
         winsLabel.setForeground(Color.GREEN);
         lossesLabel = new JLabel("Przegrane: 0", SwingConstants.CENTER);
         lossesLabel.setForeground(Color.RED);
+        totalAttemptsLabel = new JLabel("Nieudane próby: 0", SwingConstants.CENTER);
 
         JButton guessButton = new JButton("Zgadnij");
         guessButton.addActionListener(new ActionListener() {
@@ -90,6 +104,8 @@ public class HangmanGame {
             }
         });
 
+        pane.add(new JLabel("Poziom trudności: "));
+        pane.add(difficultyBox);
         pane.add(new JLabel("Wpisz literę: "));
         pane.add(guessField);
         pane.add(new JLabel("Słowo do zgadnięcia: "));
@@ -102,10 +118,10 @@ public class HangmanGame {
         pane.add(categoryLabel);
         pane.add(winsLabel);
         pane.add(lossesLabel);
+        pane.add(totalAttemptsLabel);
 
         frame.setVisible(true);
 
-        // Start animations
         startTitleAnimation();
         startAttemptsLabelAnimation();
     }
@@ -141,11 +157,24 @@ public class HangmanGame {
         String[] categories = CATEGORIES.keySet().toArray(new String[0]);
         selectedCategory = categories[rand.nextInt(categories.length)];
         wordToGuess = CATEGORIES.get(selectedCategory)[rand.nextInt(CATEGORIES.get(selectedCategory).length)];
-        
+
         wordLabel.setText(new String(new char[wordToGuess.length()]).replace("\0", "*"));
-        remainingAttempts = wordToGuess.length() + 2;
+
+        String difficulty = (String) difficultyBox.getSelectedItem();
+        switch (difficulty) {
+            case "Łatwy":
+                remainingAttempts = wordToGuess.length() + 5;
+                break;
+            case "Średni":
+                remainingAttempts = wordToGuess.length() + 2;
+                break;
+            case "Trudny":
+                remainingAttempts = wordToGuess.length();
+                break;
+        }
+
         attemptsLabel.setText(String.valueOf(remainingAttempts));
-        resultLabel.setText(""); 
+        resultLabel.setText("");
         categoryLabel.setText(selectedCategory);
     }
 
@@ -163,35 +192,42 @@ public class HangmanGame {
     private void makeGuess(char guess) {
         StringBuilder guessedWord = new StringBuilder(wordLabel.getText());
         String lowerCaseGuess = String.valueOf(guess).toLowerCase();
-        
+
         if (wordToGuess.toLowerCase().contains(lowerCaseGuess)) {
             for (int i = 0; i < wordToGuess.length(); i++) {
-              if (Character.toLowerCase(wordToGuess.charAt(i)) == lowerCaseGuess.charAt(0)) {
-                guessedWord.setCharAt(i, guess);
-              }
+                if (Character.toLowerCase(wordToGuess.charAt(i)) == lowerCaseGuess.charAt(0)) {
+                    guessedWord.setCharAt(i, guess);
+                }
             }
             wordLabel.setText(guessedWord.toString());
-        
 
             if (guessedWord.indexOf("*") == -1) {
                 resultLabel.setText("Gratulacje, wygrałeś! Słowem było: " + wordToGuess);
                 wins++;
                 winsLabel.setText("Wygrane: " + wins);
-                JOptionPane.showMessageDialog(frame, "Gratulacje, wygrałeś! Słowem było: "+ wordToGuess);
+                JOptionPane.showMessageDialog(frame, "Gratulacje, wygrałeś! Słowem było: " + wordToGuess);
                 startGame();
             }
         } else {
             remainingAttempts--;
+            totalAttempts++;
             attemptsLabel.setText(String.valueOf(remainingAttempts));
 
             if (remainingAttempts <= 0) {
                 resultLabel.setText("Spróbuj jeszcze raz, słowem było: " + wordToGuess);
                 losses++;
                 lossesLabel.setText("Przegrane: " + losses);
-                JOptionPane.showMessageDialog(frame, "Spróbuj jeszcze raz, słowem było: "+ wordToGuess);
+                JOptionPane.showMessageDialog(frame, "Spróbuj jeszcze raz, słowem było: " + wordToGuess);
                 startGame();
             }
         }
+        updateStats();
+    }
+
+    private void updateStats() {
+        totalAttemptsLabel.setText("Nieudane próby: " + totalAttempts);
+        winsLabel.setText("Wygrane: " + wins);
+        lossesLabel.setText("Przegrane: " + losses);
     }
 
     public static void main(String[] args) {
