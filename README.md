@@ -13,6 +13,7 @@ Spis treści:
 
 2.Pobieranie
 - Projekt można pobrać poprzez sklonowanie tego repozytorium za pomocą Gita.
+- Aby uruchomić plik wymagane jest jego skompilowanie.
 
 3.Rozgrywka
 - Wyświetla się kategoria i losowe słowo z podkreśleniami dla niezgadywanych liter,
